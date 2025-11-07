@@ -57,3 +57,26 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+---
+
+## Ayla Motorbike Rent - Invoice Maker (MVP)
+
+This workspace contains an MVP to create rental invoices (Laravel 11 + Tailwind + dompdf).
+
+Setup summary:
+
+1. Install PHP dependencies: `composer install`
+2. (Optional) Install Breeze for auth: `composer require laravel/breeze --dev` then `php artisan breeze:install` and `npm install && npm run dev`
+3. Install dompdf wrapper: `composer require barryvdh/laravel-dompdf`
+4. Configure `.env` for DB and mail
+5. Run migrations & seeders: `php artisan migrate && php artisan db:seed`
+6. Start server: `php artisan serve`
+
+Default admin credentials (created by seeder):
+- email: `admin@example.com`
+- password: `password`
+
+Notes:
+- The code expects auth routes (login/logout) to be available via Laravel Breeze.
+- Ensure `public/logo.png` exists if you want a logo on the PDF.
