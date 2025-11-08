@@ -87,19 +87,21 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Sewa</label>
-                        <input type="text" id="tanggal_sewa_display" readonly
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition cursor-pointer bg-white"
-                            placeholder="Pilih tanggal">
-                        <input type="hidden" name="tanggal_sewa" id="tanggal_sewa" value="{{ old('tanggal_sewa', date('Y-m-d')) }}">
-                        <p class="mt-1 text-xs text-gray-500">Klik untuk memilih tanggal</p>
+                        <input type="date" name="tanggal_sewa" id="tanggal_sewa" 
+                            value="{{ old('tanggal_sewa', date('Y-m-d')) }}"
+                            min="{{ date('Y-m-d') }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                            required>
+                        <p class="mt-1 text-xs text-gray-500">Format: DD/MM/YYYY</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Kembali</label>
-                        <input type="text" id="tanggal_kembali_display" readonly
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition cursor-pointer bg-white"
-                            placeholder="Pilih tanggal">
-                        <input type="hidden" name="tanggal_kembali" id="tanggal_kembali" value="{{ old('tanggal_kembali') }}">
-                        <p class="mt-1 text-xs text-gray-500">Klik untuk memilih tanggal</p>
+                        <input type="date" name="tanggal_kembali" id="tanggal_kembali" 
+                            value="{{ old('tanggal_kembali') }}"
+                            min="{{ date('Y-m-d') }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                            required>
+                        <p class="mt-1 text-xs text-gray-500">Format: DD/MM/YYYY</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Merk Motor</label>
@@ -327,46 +329,6 @@
 </div>
 
 <script>
-    // Format tanggal ke "8 November 2025"
-    function formatTanggalIndonesia(dateString) {
-        if (!dateString) return '';
-        
-        const bulanIndonesia = [
-            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-        ];
-        
-        const date = new Date(dateString);
-        const tanggal = date.getDate();
-        const bulan = bulanIndonesia[date.getMonth()];
-        const tahun = date.getFullYear();
-        
-        return `${tanggal} ${bulan} ${tahun}`;
-    }
-
-    // Konversi tanggal dari format Indonesia ke Y-m-d
-    function parseTanggalIndonesia(dateString) {
-        const bulanIndonesia = {
-            'Januari': 0, 'Februari': 1, 'Maret': 2, 'April': 3, 'Mei': 4, 'Juni': 5,
-            'Juli': 6, 'Agustus': 7, 'September': 8, 'Oktober': 9, 'November': 10, 'Desember': 11
-        };
-        
-        const parts = dateString.split(' ');
-        if (parts.length === 3) {
-            const tanggal = parseInt(parts[0]);
-            const bulan = bulanIndonesia[parts[1]];
-            const tahun = parseInt(parts[2]);
-            
-            const date = new Date(tahun, bulan, tanggal);
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            
-            return `${year}-${month}-${day}`;
-        }
-        return '';
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
         // Fungsi hitung kekurangan pembayaran
         window.hitungKekurangan = function() {
@@ -378,68 +340,18 @@
                 'Rp ' + sisaPembayaran.toLocaleString('id-ID');
         };
         
-        // Inisialisasi tanggal sewa dengan tanggal hari ini
+        // Setup tanggal kembali min date based on tanggal sewa
         const tanggalSewaInput = document.getElementById('tanggal_sewa');
-        const tanggalSewaDisplay = document.getElementById('tanggal_sewa_display');
         const tanggalKembaliInput = document.getElementById('tanggal_kembali');
-        const tanggalKembaliDisplay = document.getElementById('tanggal_kembali_display');
         
-        // Set initial value untuk tanggal sewa
-        if (tanggalSewaInput.value) {
-            tanggalSewaDisplay.value = formatTanggalIndonesia(tanggalSewaInput.value);
-        }
-        
-        // Set initial value untuk tanggal kembali jika ada
-        if (tanggalKembaliInput.value) {
-            tanggalKembaliDisplay.value = formatTanggalIndonesia(tanggalKembaliInput.value);
-        }
-        
-        // Buat date picker untuk tanggal sewa
-        tanggalSewaDisplay.addEventListener('click', function() {
-            const tempInput = document.createElement('input');
-            tempInput.type = 'date';
-            tempInput.min = '{{ date('Y-m-d') }}';
-            tempInput.value = tanggalSewaInput.value || '{{ date('Y-m-d') }}';
-            tempInput.style.position = 'absolute';
-            tempInput.style.opacity = '0';
-            tempInput.style.pointerEvents = 'none';
-            document.body.appendChild(tempInput);
+        tanggalSewaInput.addEventListener('change', function() {
+            // Set min date untuk tanggal kembali sama dengan tanggal sewa
+            tanggalKembaliInput.min = this.value;
             
-            tempInput.addEventListener('change', function() {
-                if (this.value) {
-                    tanggalSewaInput.value = this.value;
-                    tanggalSewaDisplay.value = formatTanggalIndonesia(this.value);
-                    
-                    // Update min date untuk tanggal kembali
-                    tanggalKembaliInput.setAttribute('data-min', this.value);
-                }
-                document.body.removeChild(tempInput);
-            });
-            
-            tempInput.showPicker();
-        });
-        
-        // Buat date picker untuk tanggal kembali
-        tanggalKembaliDisplay.addEventListener('click', function() {
-            const tempInput = document.createElement('input');
-            tempInput.type = 'date';
-            const minDate = tanggalSewaInput.value || '{{ date('Y-m-d') }}';
-            tempInput.min = minDate;
-            tempInput.value = tanggalKembaliInput.value || minDate;
-            tempInput.style.position = 'absolute';
-            tempInput.style.opacity = '0';
-            tempInput.style.pointerEvents = 'none';
-            document.body.appendChild(tempInput);
-            
-            tempInput.addEventListener('change', function() {
-                if (this.value) {
-                    tanggalKembaliInput.value = this.value;
-                    tanggalKembaliDisplay.value = formatTanggalIndonesia(this.value);
-                }
-                document.body.removeChild(tempInput);
-            });
-            
-            tempInput.showPicker();
+            // Jika tanggal kembali sudah diisi tapi lebih kecil dari tanggal sewa, reset
+            if (tanggalKembaliInput.value && tanggalKembaliInput.value < this.value) {
+                tanggalKembaliInput.value = this.value;
+            }
         });
 
         // Simple fuel level indicator (without Alpine.js, using vanilla JS)
