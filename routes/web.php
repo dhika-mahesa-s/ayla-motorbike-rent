@@ -19,6 +19,20 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
+// One-time migration endpoint for production (should be removed after use)
+Route::get('/run-migrations', function () {
+    if (config('app.env') !== 'production') {
+        return 'This route only works in production';
+    }
+    
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return 'Migrations completed successfully! <br>' . \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Exception $e) {
+        return 'Migration failed: ' . $e->getMessage();
+    }
+});
+
 // Invoice routes (requires auth & admin)
 use App\Http\Controllers\InvoiceController;
 
