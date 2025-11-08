@@ -27,7 +27,15 @@
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
-        "APP_URL": "https://example-atomik.vercel.app/",
+        "APP_URL": "",
+        "APP_KEY": "base64:GFawgNQC40zyraA2p+Y7aMa7mKvPbwL/yeharY1xQXw=", 
+        "DB_CONNECTION": "mysql",
+        "DB_HOST": "il5-7b.h.filess.io",
+        "DB_PORT": "3307",
+        "DB_DATABASE": "aylamotorbikerent_interestis",
+        "DB_USERNAME": "aylamotorbikerent_interestis",
+        "DB_PASSWORD": "2a840eea6c23e09350d28ec242c57bd45e2234e2",
+        
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
         "APP_PACKAGES_CACHE": "/tmp/packages.php",
