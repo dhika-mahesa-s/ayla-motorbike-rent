@@ -87,21 +87,31 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Sewa</label>
-                        <input type="date" name="tanggal_sewa" id="tanggal_sewa" 
-                            value="{{ old('tanggal_sewa', date('Y-m-d')) }}"
-                            min="{{ date('Y-m-d') }}"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                            required>
-                        <p class="mt-1 text-xs text-gray-500">Format: DD/MM/YYYY</p>
+                        <div class="relative">
+                            <input type="text" id="tanggal_sewa_display" readonly
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition cursor-pointer bg-white"
+                                placeholder="Pilih tanggal">
+                            <input type="date" name="tanggal_sewa" id="tanggal_sewa" 
+                                value="{{ old('tanggal_sewa', date('Y-m-d')) }}"
+                                min="{{ date('Y-m-d') }}"
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                required>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Klik untuk memilih tanggal</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Kembali</label>
-                        <input type="date" name="tanggal_kembali" id="tanggal_kembali" 
-                            value="{{ old('tanggal_kembali') }}"
-                            min="{{ date('Y-m-d') }}"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                            required>
-                        <p class="mt-1 text-xs text-gray-500">Format: DD/MM/YYYY</p>
+                        <div class="relative">
+                            <input type="text" id="tanggal_kembali_display" readonly
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition cursor-pointer bg-white"
+                                placeholder="Pilih tanggal">
+                            <input type="date" name="tanggal_kembali" id="tanggal_kembali" 
+                                value="{{ old('tanggal_kembali') }}"
+                                min="{{ date('Y-m-d') }}"
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                required>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Klik untuk memilih tanggal</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Merk Motor</label>
@@ -329,6 +339,19 @@
 </div>
 
 <script>
+    function formatTanggalIndonesia(dateString) {
+        if (!dateString) return '';
+        const bulanIndonesia = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        
+        const date = new Date(dateString);
+        const tanggal = date.getDate();
+        const bulan = bulanIndonesia[date.getMonth()];
+        const tahun = date.getFullYear();
+        
+        return `${tanggal} ${bulan} ${tahun}`;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Fungsi hitung kekurangan pembayaran
         window.hitungKekurangan = function() {
@@ -340,18 +363,36 @@
                 'Rp ' + sisaPembayaran.toLocaleString('id-ID');
         };
         
-        // Setup tanggal kembali min date based on tanggal sewa
+        // Setup date pickers
         const tanggalSewaInput = document.getElementById('tanggal_sewa');
+        const tanggalSewaDisplay = document.getElementById('tanggal_sewa_display');
         const tanggalKembaliInput = document.getElementById('tanggal_kembali');
+        const tanggalKembaliDisplay = document.getElementById('tanggal_kembali_display');
         
+        // Set initial display values
+        if (tanggalSewaInput.value) {
+            tanggalSewaDisplay.value = formatTanggalIndonesia(tanggalSewaInput.value);
+        }
+        
+        if (tanggalKembaliInput.value) {
+            tanggalKembaliDisplay.value = formatTanggalIndonesia(tanggalKembaliInput.value);
+        }
+        
+        // Update display when date changes
         tanggalSewaInput.addEventListener('change', function() {
-            // Set min date untuk tanggal kembali sama dengan tanggal sewa
+            tanggalSewaDisplay.value = formatTanggalIndonesia(this.value);
+            // Set min date untuk tanggal kembali
             tanggalKembaliInput.min = this.value;
             
-            // Jika tanggal kembali sudah diisi tapi lebih kecil dari tanggal sewa, reset
+            // Reset tanggal kembali jika lebih kecil dari tanggal sewa
             if (tanggalKembaliInput.value && tanggalKembaliInput.value < this.value) {
                 tanggalKembaliInput.value = this.value;
+                tanggalKembaliDisplay.value = formatTanggalIndonesia(this.value);
             }
+        });
+        
+        tanggalKembaliInput.addEventListener('change', function() {
+            tanggalKembaliDisplay.value = formatTanggalIndonesia(this.value);
         });
 
         // Simple fuel level indicator (without Alpine.js, using vanilla JS)
