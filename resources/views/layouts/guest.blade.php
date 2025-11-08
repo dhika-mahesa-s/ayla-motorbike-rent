@@ -12,18 +12,8 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @if(file_exists(public_path('build/manifest.json')))
-            @php
-                $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
-                $cssFile = $manifest['resources/css/app.css']['file'] ?? null;
-                $jsFile = $manifest['resources/js/app.js']['file'] ?? null;
-            @endphp
-            @if($cssFile)
-                <link rel="stylesheet" href="{{ asset('build/' . $cssFile) }}">
-            @endif
-            @if($jsFile)
-                <script type="module" src="{{ asset('build/' . $jsFile) }}"></script>
-            @endif
+        @if(config('app.env') === 'production')
+            <script src="https://cdn.tailwindcss.com"></script>
         @else
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @endif
