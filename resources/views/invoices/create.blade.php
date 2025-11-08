@@ -87,30 +87,26 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Sewa</label>
-                        <div class="relative">
-                            <input type="text" id="tanggal_sewa_display" readonly
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition cursor-pointer bg-white"
-                                placeholder="Pilih tanggal">
-                            <input type="date" name="tanggal_sewa" id="tanggal_sewa" 
-                                value="{{ old('tanggal_sewa', date('Y-m-d')) }}"
-                                min="{{ date('Y-m-d') }}"
-                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                required>
-                        </div>
+                        <input type="text" id="tanggal_sewa_display" readonly
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition cursor-pointer bg-white"
+                            placeholder="Pilih tanggal">
+                        <input type="date" name="tanggal_sewa" id="tanggal_sewa" 
+                            value="{{ old('tanggal_sewa', date('Y-m-d')) }}"
+                            min="{{ date('Y-m-d') }}"
+                            class="hidden"
+                            required>
                         <p class="mt-1 text-xs text-gray-500">Klik untuk memilih tanggal</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Kembali</label>
-                        <div class="relative">
-                            <input type="text" id="tanggal_kembali_display" readonly
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition cursor-pointer bg-white"
-                                placeholder="Pilih tanggal">
-                            <input type="date" name="tanggal_kembali" id="tanggal_kembali" 
-                                value="{{ old('tanggal_kembali') }}"
-                                min="{{ date('Y-m-d') }}"
-                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                required>
-                        </div>
+                        <input type="text" id="tanggal_kembali_display" readonly
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition cursor-pointer bg-white"
+                            placeholder="Pilih tanggal">
+                        <input type="date" name="tanggal_kembali" id="tanggal_kembali" 
+                            value="{{ old('tanggal_kembali') }}"
+                            min="{{ date('Y-m-d') }}"
+                            class="hidden"
+                            required>
                         <p class="mt-1 text-xs text-gray-500">Klik untuk memilih tanggal</p>
                     </div>
                     <div>
@@ -377,6 +373,16 @@
         if (tanggalKembaliInput.value) {
             tanggalKembaliDisplay.value = formatTanggalIndonesia(tanggalKembaliInput.value);
         }
+        
+        // Click handler untuk tanggal sewa
+        tanggalSewaDisplay.addEventListener('click', function() {
+            tanggalSewaInput.showPicker ? tanggalSewaInput.showPicker() : tanggalSewaInput.click();
+        });
+        
+        // Click handler untuk tanggal kembali
+        tanggalKembaliDisplay.addEventListener('click', function() {
+            tanggalKembaliInput.showPicker ? tanggalKembaliInput.showPicker() : tanggalKembaliInput.click();
+        });
         
         // Update display when date changes
         tanggalSewaInput.addEventListener('change', function() {
