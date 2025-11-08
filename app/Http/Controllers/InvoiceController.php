@@ -101,27 +101,18 @@ class InvoiceController extends Controller
 
     public function generatePdf(Invoice $invoice)
     {
-        // admin middleware ensures user is admin
-    $pdf = app('dompdf.wrapper')->loadView('invoices.pdf', compact('invoice'));
-
-        $path = 'invoices/invoice-' . $invoice->id . '.pdf';
-        Storage::disk('local')->put($path, $pdf->output());
-
-        $invoice->update(['pdf_path' => $path]);
-
-        return response($pdf->output(), 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="invoice-'. $invoice->id .'.pdf"'
-        ]);
+        // Generate dan tampilkan PDF di browser (untuk preview)
+        $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
+        
+        return $pdf->stream('invoice-' . str_pad($invoice->id, 4, '0', STR_PAD_LEFT) . '-' . $invoice->customer_name . '.pdf');
     }
 
     public function download(Invoice $invoice)
     {
-        if (!$invoice->pdf_path || !Storage::disk('local')->exists($invoice->pdf_path)) {
-            // generate first
-            $this->generatePdf($invoice);
-        }
-
-        return Storage::download($invoice->pdf_path, 'invoice-'.$invoice->id.'.pdf');
+        // Generate PDF on-the-fly untuk invoice ini
+        $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
+        
+        // Download langsung tanpa save ke storage
+        return $pdf->download('invoice-' . str_pad($invoice->id, 4, '0', STR_PAD_LEFT) . '-' . $invoice->customer_name . '.pdf');
     }
 }

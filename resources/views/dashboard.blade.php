@@ -61,59 +61,82 @@
             <div class="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-200">
                 <h2 class="text-lg sm:text-xl font-bold text-gray-900">Recent Invoices</h2>
             </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice #</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Motor</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse(\App\Models\Invoice::latest()->take(10)->get() as $invoice)
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
-                                <span class="text-xs sm:text-sm font-medium text-purple-600">#{{ str_pad($invoice->id, 4, '0', STR_PAD_LEFT) }}</span>
-                            </td>
-                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
-                                <div class="text-xs sm:text-sm font-medium text-gray-900">{{ $invoice->customer_name }}</div>
-                                <div class="text-xs text-gray-500">{{ $invoice->phone }}</div>
-                            </td>
-                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
-                                <div class="text-xs sm:text-sm text-gray-900">{{ $invoice->motor_type }}</div>
-                                <div class="text-xs text-gray-500">{{ $invoice->plate_number }}</div>
-                            </td>
-                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
-                                {{ optional($invoice->start_date)->format('d M Y') }}
-                            </td>
-                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
-                                <span class="text-xs sm:text-sm font-semibold text-gray-900">Rp {{ number_format($invoice->rental_fee, 0, ',', '.') }}</span>
-                            </td>
-                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm">
-                                <a href="{{ route('invoices.show', $invoice) }}" class="text-indigo-600 hover:text-indigo-900 font-medium">Lihat</a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="px-4 sm:px-6 py-8 text-center text-gray-500">
-                                <svg class="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                <p class="text-sm sm:text-base">No invoices yet. Create your first invoice!</p>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            
+            @php
+                $recentInvoices = \App\Models\Invoice::latest()->take(10)->get();
+            @endphp
+
+            @if($recentInvoices->count() > 0)
+            <div class="p-4 sm:p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @foreach($recentInvoices as $invoice)
+                    <!-- Invoice Card -->
+                    <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg shadow-md hover:shadow-lg transition-shadow p-5 border border-purple-100">
+                        <div class="flex items-start justify-between mb-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-600 text-white">
+                                #{{ str_pad($invoice->id, 4, '0', STR_PAD_LEFT) }}
+                            </span>
+                            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        
+                        <div class="space-y-3 mb-4">
+                            <!-- Customer Info -->
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Customer</p>
+                                <p class="text-sm font-semibold text-gray-900">{{ $invoice->customer_name }}</p>
+                                <p class="text-xs text-gray-600">{{ $invoice->phone }}</p>
+                            </div>
+                            
+                            <!-- Motor Info -->
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Motor</p>
+                                <p class="text-sm font-semibold text-gray-900">{{ $invoice->motor_type }}</p>
+                                <p class="text-xs text-gray-600">{{ $invoice->plate_number }}</p>
+                            </div>
+                            
+                            <!-- Date -->
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Tanggal Sewa</p>
+                                <p class="text-sm text-gray-900">{{ optional($invoice->start_date)->format('d M Y') }}</p>
+                            </div>
+                            
+                            <!-- Total -->
+                            <div class="pt-3 border-t border-purple-200">
+                                <p class="text-xs text-gray-500 mb-1">Total Biaya</p>
+                                <p class="text-lg font-bold text-purple-600">Rp {{ number_format($invoice->rental_fee, 0, ',', '.') }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Button -->
+                        <a href="{{ route('invoices.show', $invoice) }}" class="w-full inline-flex justify-center items-center px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold rounded-lg hover:from-purple-700 hover:to-indigo-700 transition transform hover:scale-105 shadow-md">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            Lihat Detail
+                        </a>
+                    </div>
+                    @endforeach
+                </div>
             </div>
+            @else
+            <div class="px-4 sm:px-6 py-12 text-center text-gray-500">
+                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <p class="text-base">Belum ada invoice. Buat invoice pertama Anda!</p>
+            </div>
+            @endif
+            
             @if(\App\Models\Invoice::count() > 10)
             <div class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
-                <a href="{{ route('invoices.index') }}" class="text-xs sm:text-sm font-medium text-purple-600 hover:text-purple-800">
-                    View all invoices →
+                <a href="{{ route('invoices.index') }}" class="text-sm font-medium text-purple-600 hover:text-purple-800 inline-flex items-center">
+                    Lihat semua invoices 
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
                 </a>
             </div>
             @endif

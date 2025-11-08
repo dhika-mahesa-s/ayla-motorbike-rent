@@ -29,7 +29,6 @@ class Invoice extends Model
         'rental_fee',
         'down_payment',
         'other_notes',
-        'pdf_path',
         'cek_lampu_depan',
         'cek_lampu_belakang',
         'cek_lampu_signal_kanan',
